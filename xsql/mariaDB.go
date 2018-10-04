@@ -34,3 +34,15 @@ func (xdb *XMariaDB) Query() (rows *sql.Rows, err error) {
 	rows, err = db.Query(xdb.SQL)
 	return
 }
+
+//Insertline 插入一条记录
+func (xdb *XMariaDB) Insertline() (err error) {
+	db, err := sql.Open("mysql", xdb.DB)
+	if err != nil {
+		return
+	}
+
+	defer db.Close()
+	_, err = db.Exec(xdb.SQL)
+	return
+}
