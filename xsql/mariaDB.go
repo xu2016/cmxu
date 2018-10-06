@@ -46,3 +46,15 @@ func (xdb *XMariaDB) Insertline() (err error) {
 	_, err = db.Exec(xdb.SQL)
 	return
 }
+
+//Updateline 更新一条记录
+func (xdb *XMariaDB) Updateline() (err error) {
+	db, err := sql.Open("mysql", xdb.DB)
+	if err != nil {
+		return
+	}
+
+	defer db.Close()
+	_, err = db.Exec(xdb.SQL)
+	return
+}
