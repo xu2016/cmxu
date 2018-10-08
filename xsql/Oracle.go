@@ -8,41 +8,39 @@ import (
 
 //XOracle 对Oracle的操作
 type XOracle struct {
-	DB  string
-	SQL string
 }
 
 //QueryLine 查询一条记录
-func (xdb *XOracle) QueryLine() (row *sql.Row, err error) {
-	db, err := sql.Open("goracle", xdb.DB)
+func (xdb *XOracle) QueryLine(dbstr, sqlstr string) (row *sql.Row, err error) {
+	db, err := sql.Open("goracle", dbstr)
 	if err != nil {
 		return
 	}
 	defer db.Close()
-	row = db.QueryRow(xdb.SQL)
+	row = db.QueryRow(sqlstr)
 	return
 }
 
 //Query 查询多条记录
-func (xdb *XOracle) Query() (rows *sql.Rows, err error) {
-	db, err := sql.Open("goracle", xdb.DB)
+func (xdb *XOracle) Query(dbstr, sqlstr string) (rows *sql.Rows, err error) {
+	db, err := sql.Open("goracle", dbstr)
 	if err != nil {
 		return
 	}
 
 	defer db.Close()
-	rows, err = db.Query(xdb.SQL)
+	rows, err = db.Query(sqlstr)
 	return
 }
 
 //Insertline 插入一条记录
-func (xdb *XOracle) Insertline() (err error) {
-	db, err := sql.Open("goracle", xdb.DB)
+func (xdb *XOracle) Insertline(dbstr, sqlstr string) (err error) {
+	db, err := sql.Open("goracle", dbstr)
 	if err != nil {
 		return
 	}
 	defer db.Close()
-	_, err = db.Exec(xdb.SQL)
+	_, err = db.Exec(sqlstr)
 	if err != nil {
 		return
 	}
@@ -51,13 +49,13 @@ func (xdb *XOracle) Insertline() (err error) {
 }
 
 //Updateline 更新一条记录
-func (xdb *XOracle) Updateline() (err error) {
-	db, err := sql.Open("goracle", xdb.DB)
+func (xdb *XOracle) Updateline(dbstr, sqlstr string) (err error) {
+	db, err := sql.Open("goracle", dbstr)
 	if err != nil {
 		return
 	}
 	defer db.Close()
-	_, err = db.Exec(xdb.SQL)
+	_, err = db.Exec(sqlstr)
 	if err != nil {
 		return
 	}

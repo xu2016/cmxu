@@ -8,53 +8,51 @@ import (
 
 //XMariaDB 对MySQL和MariaDB的操作
 type XMariaDB struct {
-	DB  string
-	SQL string
 }
 
 //QueryLine 查询一条记录
-func (xdb *XMariaDB) QueryLine() (row *sql.Row, err error) {
-	db, err := sql.Open("mysql", xdb.DB)
+func (xdb *XMariaDB) QueryLine(dbstr, sqlstr string) (row *sql.Row, err error) {
+	db, err := sql.Open("mysql", dbstr)
 	if err != nil {
 		return
 	}
 	defer db.Close()
-	row = db.QueryRow(xdb.SQL)
+	row = db.QueryRow(sqlstr)
 	return
 }
 
 //Query 查询多条记录
-func (xdb *XMariaDB) Query() (rows *sql.Rows, err error) {
-	db, err := sql.Open("mysql", xdb.DB)
+func (xdb *XMariaDB) Query(dbstr, sqlstr string) (rows *sql.Rows, err error) {
+	db, err := sql.Open("mysql", dbstr)
 	if err != nil {
 		return
 	}
 
 	defer db.Close()
-	rows, err = db.Query(xdb.SQL)
+	rows, err = db.Query(sqlstr)
 	return
 }
 
 //Insertline 插入一条记录
-func (xdb *XMariaDB) Insertline() (err error) {
-	db, err := sql.Open("mysql", xdb.DB)
+func (xdb *XMariaDB) Insertline(dbstr, sqlstr string) (err error) {
+	db, err := sql.Open("mysql", dbstr)
 	if err != nil {
 		return
 	}
 
 	defer db.Close()
-	_, err = db.Exec(xdb.SQL)
+	_, err = db.Exec(sqlstr)
 	return
 }
 
 //Updateline 更新一条记录
-func (xdb *XMariaDB) Updateline() (err error) {
-	db, err := sql.Open("mysql", xdb.DB)
+func (xdb *XMariaDB) Updateline(dbstr, sqlstr string) (err error) {
+	db, err := sql.Open("mysql", dbstr)
 	if err != nil {
 		return
 	}
 
 	defer db.Close()
-	_, err = db.Exec(xdb.SQL)
+	_, err = db.Exec(sqlstr)
 	return
 }
