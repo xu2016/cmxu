@@ -45,7 +45,7 @@ type QJSON struct {
 }
 
 //Init ...
-func (rr QJSON) Init() {
+func (rr *QJSON) Init() {
 	rr.NmInt = make(map[string]sql.NullInt64, 0)
 	rr.NmFloat = make(map[string]sql.NullFloat64, 0)
 	rr.NmString = make(map[string]sql.NullString, 0)
@@ -60,7 +60,7 @@ type QRowsJSON struct {
 }
 
 //Init ...
-func (rp QRowsJSON) Init() {
+func (rp *QRowsJSON) Init() {
 	rp.Code = 1
 	rp.Msg = "查询失败"
 	rp.Data = make([]QJSON, 0)
@@ -105,7 +105,7 @@ func GetInt64(null sql.NullInt64, dft int64) (res int64) {
 //QIsEmpty 判断查询结果是否为空
 func QIsEmpty(rp QRowsJSON) (bl bool) {
 	bl = false
-	if len(rp.Data) != 0 {
+	if len(rp.Data) == 0 {
 		bl = true
 	}
 	return
