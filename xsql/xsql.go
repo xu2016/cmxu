@@ -135,8 +135,6 @@ func RTypeSlice(tstr []string) (ci []interface{}, err error) {
 func QRows(dbtype, dbstr string, cmt bool, r *http.Request) (rp *QRowsJSON) {
 	rp = &QRowsJSON{}
 	rp.Init()
-	rr := QJSON{}
-	rr.Init()
 	cstr := strings.Split(r.FormValue("qcstr"), ",")
 	tstr := strings.Split(r.FormValue("qtstr"), ",")
 	ci, err := RTypeSlice(tstr)
@@ -152,9 +150,10 @@ func QRows(dbtype, dbstr string, cmt bool, r *http.Request) (rp *QRowsJSON) {
 		log.Println("Query:", err)
 		return
 	}
-
 	defer rows.Close()
 	for rows.Next() {
+		rr := QJSON{}
+		rr.Init()
 		err = rows.Scan(ci...)
 		if err != nil {
 			rp.Msg = err.Error()
@@ -175,6 +174,7 @@ func QRows(dbtype, dbstr string, cmt bool, r *http.Request) (rp *QRowsJSON) {
 		}
 		rp.Data = append(rp.Data, rr)
 	}
+
 	rp.Code = 0
 	rp.Msg = "查询成功"
 	return
