@@ -15,12 +15,12 @@ import (
 type CXSql struct {
 	dbtype string
 	db     string
-	sql    string
 	cmt    bool
 }
 
-func NewSQL(sdbtype, sdb, ssql string, scmt bool) (xdb CXSql) {
-	xdb = CXSql{dbtype: sdbtype, db: sdb, sql: ssql, cmt: scmt}
+//NewSQL 创建一个数据库对象
+func NewSQL(sdbtype, sdb string, scmt bool) (xdb CXSql) {
+	xdb = CXSql{dbtype: sdbtype, db: sdb, cmt: scmt}
 	return
 }
 
@@ -143,8 +143,8 @@ func QRows(dbtype, dbstr string, cmt bool, r *http.Request) (rp *QRowsJSON) {
 		log.Println("RTypeSlice:", err)
 		return
 	}
-	db := NewSQL(dbtype, dbstr, r.FormValue("qstr"), cmt)
-	rows, err := db.Query()
+	db := NewSQL(dbtype, dbstr, cmt)
+	rows, err := db.Query(r.FormValue("qstr"))
 	if err != nil {
 		rp.Msg = err.Error()
 		log.Println("Query:", err)

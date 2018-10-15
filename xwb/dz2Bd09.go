@@ -1,4 +1,4 @@
-package xcm
+package xwb
 
 import (
 	"encoding/json"

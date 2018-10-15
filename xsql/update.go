@@ -1,17 +1,15 @@
 package xsql
 
-import (
-	"database/sql"
-)
+import "database/sql"
 
 //Updateline 更新一条记录
-func (xdb *CXSql) Updateline() (err error) {
+func (xdb *CXSql) Updateline(qstr string) (err error) {
 	db, err := sql.Open(xdb.dbtype, xdb.db)
 	if err != nil {
 		return
 	}
 	defer db.Close()
-	_, err = db.Exec(xdb.sql)
+	_, err = db.Exec(qstr)
 	if err != nil {
 		return
 	}

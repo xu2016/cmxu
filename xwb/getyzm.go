@@ -93,3 +93,35 @@ func SendYzm(phone, msg string) (err error) {
 	_, err = XPost("http://211.95.193.112:8080/sqlms/insertline", qstr, "", "", &rr)
 	return
 }
+
+//SetYZM 设置验证码
+func SetYZM(phone, msg, dbstr, sql string) (err error) {
+	db := xsql.NewSQL("mysql", dbstr, false)
+	err = db.Insertline("insert " + sql)
+	if err != nil {
+		err = db.Updateline("update " + sql)
+		if err != nil {
+			return
+		}
+	}
+	err = SendYzm(phone, msg)
+	return
+}
+
+//YzYzm 验证验证码
+func YzYzm(yzm, dbstr, sql string) (bl bool) {
+	db := xsql.NewSQL("mysql", dbstr, false)
+	row, err := db.QueryLine(sql)
+	if err != nil {
+		return
+	}
+	var dbyzm string
+	err = row.Scan(&dbyzm)
+	if err != nil {
+		return
+	}
+	if yzm == dbyzm {
+		bl = true
+	}
+	return
+}
