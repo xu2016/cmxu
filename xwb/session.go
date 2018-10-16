@@ -12,7 +12,7 @@ import (
 var GSession *SessionManager
 
 //CookieName ...
-var CookieName string = "sidx08063600"
+var CookieName = "sidx08063600"
 
 //然后在 init 函数中初始化
 func init() {
@@ -23,7 +23,7 @@ func init() {
 //Session session存储结构
 type Session struct {
 	TimeAccessed time.Time //最后访问时间
-	GroupID      string    //群组ID
+	GroupID      int       //群组ID
 }
 
 //SessionManager Session管理器
@@ -59,7 +59,7 @@ func (sessionManager *SessionManager) GC() {
 }
 
 //Add 添加Session
-func (sessionManager *SessionManager) Add(sid, gid string) error {
+func (sessionManager *SessionManager) Add(sid string, gid int) error {
 	sessionManager.lock.Lock()
 	defer sessionManager.lock.Unlock()
 	zs := Session{}
@@ -137,7 +137,7 @@ func (sessionManager *SessionManager) DeleteCookie(w http.ResponseWriter, cookie
 }
 
 //GetGroupID 获取群组ID
-func (sessionManager *SessionManager) GetGroupID(sid string) (gid string, err error) {
+func (sessionManager *SessionManager) GetGroupID(sid string) (gid int, err error) {
 	err = nil
 	zs, ok := sessionManager.sid[sid]
 	if !ok {
