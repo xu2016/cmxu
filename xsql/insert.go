@@ -2,6 +2,7 @@ package xsql
 
 import (
 	"database/sql"
+	"log"
 )
 
 //Insertline 插入一条记录
@@ -13,6 +14,8 @@ func (xdb *CXSql) Insertline(qstr string) (err error) {
 	defer db.Close()
 	_, err = db.Exec(qstr)
 	if err != nil {
+		log.Println(err)
+		log.Println(qstr)
 		return
 	}
 	if xdb.cmt {

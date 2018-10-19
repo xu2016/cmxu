@@ -27,6 +27,7 @@ func (xdb *CXSql) Query(qstr string) (rows *sql.Rows, err error) {
 	rows, err = db.Query(qstr)
 	if err != nil {
 		log.Println("Query err:", err)
+		log.Println(qstr)
 		return
 	}
 	return
