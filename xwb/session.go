@@ -22,6 +22,8 @@ func init() {
 
 //Session session存储结构
 type Session struct {
+	Uname        string    //用户账号
+	Name         string    //用户名称
 	TimeAccessed time.Time //最后访问时间
 	GroupID      int       //群组ID
 }
@@ -59,12 +61,14 @@ func (sessionManager *SessionManager) GC() {
 }
 
 //Add 添加Session
-func (sessionManager *SessionManager) Add(sid string, gid int) error {
+func (sessionManager *SessionManager) Add(sid, phone, name string, gid int) error {
 	sessionManager.lock.Lock()
 	defer sessionManager.lock.Unlock()
 	zs := Session{}
 	zs.TimeAccessed = time.Now()
 	zs.GroupID = gid
+	zs.Name = name
+	zs.Uname = phone
 	sessionManager.sid[sid] = zs
 	return nil
 }
