@@ -20,25 +20,24 @@ func init() {
 	go GSession.GC()
 }
 
-//Session session存储结构
-type Session struct {
+//ZSSession session存储结构
+type ZSSession struct {
 	Uname        string    //用户账号
-	Name         string    //用户名称
 	TimeAccessed time.Time //最后访问时间
-	GroupID      int       //群组ID
+	GID          int       //群组ID
 }
 
 //SessionManager Session管理器
 type SessionManager struct {
-	cookieName  string             //private cookiename
-	lock        sync.Mutex         // protects session
-	sid         map[string]Session //session id 唯一标示
+	cookieName  string               //private cookiename
+	lock        sync.Mutex           // protects session
+	sid         map[string]ZSSession //session id 唯一标示
 	maxlifetime int64
 }
 
 //NewSessionManager 参加一个Session管理器
 func NewSessionManager(cookieName string, maxlifetime int64) (*SessionManager, error) {
-	sid := make(map[string]Session)
+	sid := make(map[string]ZSSession, 0)
 	return &SessionManager{cookieName: cookieName, sid: sid, maxlifetime: maxlifetime}, nil
 }
 
@@ -60,21 +59,20 @@ func (sessionManager *SessionManager) GC() {
 	time.AfterFunc(time.Duration(sessionManager.maxlifetime*2), func() { sessionManager.GC() })
 }
 
-//Add 添加Session
-func (sessionManager *SessionManager) Add(sid, phone, name string, gid int) error {
+//Set 添加Session
+func (sessionManager *SessionManager) Set(sid, phone string, gid int) error {
+	zs := ZSSession{}
+	zs.TimeAccessed = time.Now()
+	zs.GID = gid
+	zs.Uname = phone
 	sessionManager.lock.Lock()
 	defer sessionManager.lock.Unlock()
-	zs := Session{}
-	zs.TimeAccessed = time.Now()
-	zs.GroupID = gid
-	zs.Name = name
-	zs.Uname = phone
 	sessionManager.sid[sid] = zs
 	return nil
 }
 
 //Get 获取Session
-func (sessionManager *SessionManager) Get(sid string) (zs Session, err error) {
+func (sessionManager *SessionManager) Get(sid string) (zs ZSSession, err error) {
 	err = nil
 	zs, ok := sessionManager.sid[sid]
 	if !ok {
@@ -114,7 +112,9 @@ func (sessionManager *SessionManager) TimeOut(sid string) bool {
 
 //GetCookie 获取客户端返回的Cookie
 func (sessionManager *SessionManager) GetCookie(r *http.Request, cookieName string) (sid string, err error) {
+
 	cookie, err := r.Cookie(cookieName)
+	//log.Println("GetCookie:", cookie, err)
 	if err != nil {
 		return
 	}
@@ -148,6 +148,6 @@ func (sessionManager *SessionManager) GetGroupID(sid string) (gid int, err error
 		err = errors.New("no session")
 		return
 	}
-	gid = zs.GroupID
+	gid = zs.GID
 	return
 }
