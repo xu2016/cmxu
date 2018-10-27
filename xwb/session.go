@@ -61,19 +61,20 @@ func (sessionManager *SessionManager) GC() {
 
 //Set 添加Session
 func (sessionManager *SessionManager) Set(sid, phone string, gid int) error {
+	sessionManager.lock.Lock()
+	defer sessionManager.lock.Unlock()
 	zs := ZSSession{}
 	zs.TimeAccessed = time.Now()
 	zs.GID = gid
 	zs.Uname = phone
-	sessionManager.lock.Lock()
-	defer sessionManager.lock.Unlock()
 	sessionManager.sid[sid] = zs
 	return nil
 }
 
 //Get 获取Session
 func (sessionManager *SessionManager) Get(sid string) (zs ZSSession, err error) {
-	err = nil
+	sessionManager.lock.Lock()
+	defer sessionManager.lock.Unlock()
 	zs, ok := sessionManager.sid[sid]
 	if !ok {
 		err = errors.New("no session")
@@ -93,7 +94,7 @@ func (sessionManager *SessionManager) Del(sid string) error {
 func (sessionManager *SessionManager) Update(sid string) error {
 	sessionManager.lock.Lock()
 	defer sessionManager.lock.Unlock()
-	zs, _ := sessionManager.Get(sid)
+	zs, _ := sessionManager.sid[sid]
 	zs.TimeAccessed = time.Now()
 	sessionManager.sid[sid] = zs
 	return nil
@@ -101,6 +102,8 @@ func (sessionManager *SessionManager) Update(sid string) error {
 
 //TimeOut 判断Session是否过期
 func (sessionManager *SessionManager) TimeOut(sid string) bool {
+	sessionManager.lock.Lock()
+	defer sessionManager.lock.Unlock()
 	if _, ok := sessionManager.sid[sid]; !ok {
 		return true
 	}
@@ -112,9 +115,7 @@ func (sessionManager *SessionManager) TimeOut(sid string) bool {
 
 //GetCookie 获取客户端返回的Cookie
 func (sessionManager *SessionManager) GetCookie(r *http.Request, cookieName string) (sid string, err error) {
-
 	cookie, err := r.Cookie(cookieName)
-	//log.Println("GetCookie:", cookie, err)
 	if err != nil {
 		return
 	}
@@ -140,9 +141,10 @@ func (sessionManager *SessionManager) DeleteCookie(w http.ResponseWriter, cookie
 	return
 }
 
-//GetGroupID 获取群组ID
-func (sessionManager *SessionManager) GetGroupID(sid string) (gid int, err error) {
-	err = nil
+//GetGID 获取群组ID
+func (sessionManager *SessionManager) GetGID(sid string) (gid int, err error) {
+	sessionManager.lock.Lock()
+	defer sessionManager.lock.Unlock()
 	zs, ok := sessionManager.sid[sid]
 	if !ok {
 		err = errors.New("no session")
