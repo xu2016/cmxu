@@ -43,3 +43,28 @@ func GetHourDiffer(stime, etime string) int64 {
 	}
 	return hour
 }
+
+//IsLeapYear 判断是否为闰年
+func IsLeapYear(year int) bool { //y == 2000, 2004
+	//判断是否为闰年
+	if year%4 == 0 && year%100 != 0 || year%400 == 0 {
+		return true
+	}
+
+	return false
+}
+
+//GetDays 获取指定年月的天数
+func GetDays(y, m int) (ds int) {
+	ds = 31
+	if m == 2 {
+		if y%4 == 0 && y%100 != 0 || y%400 == 0 {
+			ds = 29
+		} else {
+			ds = 28
+		}
+	} else if m == 4 || m == 6 || m == 9 || m == 11 {
+		ds = 30
+	}
+	return
+}
