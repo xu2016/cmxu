@@ -84,10 +84,10 @@ func (sm *SManager) Del(sid string) {
 
 //Update 更新Session最后访问时间
 func (sm *SManager) Update(sid string) {
-	zs, _ := sm.sid[sid]
-	zs.timeAccessed = time.Now()
 	sm.lock.Lock()
 	defer sm.lock.Unlock()
+	zs, _ := sm.sid[sid]
+	zs.timeAccessed = time.Now()
 	sm.sid[sid] = zs
 	return
 }
