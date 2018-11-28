@@ -68,3 +68,14 @@ func GetDays(y, m int) (ds int) {
 	}
 	return
 }
+
+//TimeLoop 每隔h小时m分钟s秒就会执行一次f函数
+func TimeLoop(f func(), h, m, s int) {
+	t := time.NewTicker(time.Duration(h)*time.Hour + time.Duration(m)*time.Minute + time.Duration(s)*time.Second)
+	for {
+		select {
+		case <-t.C:
+			f()
+		}
+	}
+}
