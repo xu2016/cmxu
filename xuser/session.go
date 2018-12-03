@@ -8,7 +8,7 @@ import (
 type ZSession struct {
 	uid          string    //用户账号
 	timeAccessed time.Time //最后访问时间
-	gid          int       //群组ID
+	gid          string    //群组ID
 }
 
 //GetUID 获取用户账号
@@ -18,7 +18,7 @@ func (zs *ZSession) GetUID() (uid string) {
 }
 
 //GetGID 获取用户账号
-func (zs *ZSession) GetGID() (gid int) {
+func (zs *ZSession) GetGID() (gid string) {
 	gid = zs.gid
 	return
 }

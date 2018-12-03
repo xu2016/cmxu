@@ -47,7 +47,7 @@ func (sm *SManager) GC() {
 }
 
 //Set 添加Session
-func (sm *SManager) Set(phone string, gid int) (sid string, err error) {
+func (sm *SManager) Set(phone string, gid string) (sid string, err error) {
 	sm.lock.Lock()
 	defer sm.lock.Unlock()
 	sid = sm.createsid(phone)
