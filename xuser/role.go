@@ -43,12 +43,14 @@ rdb:角色数据库, rtb:角色数据表, rtp:角色数据库类型
 rmdb:角色菜单关系数据库, rmtb:角色菜单关系数据表, rmtp:角色菜单关系数据库类型
 */
 func NewRole() (r map[string]Role) {
+	r = make(map[string]Role)
 	mm := readMenu()
+	m := menuLevel(mm)
 	rr := readRole()
 	rm := readRoleMenu()
-	m := menuLevel(mm)
 	for i, v := range rr {
 		rl := Role{}
+		rl.inlmt = make(map[string]int)
 		rl.rname = v
 		for _, vv := range rm {
 			if vv.role == i {
@@ -83,6 +85,7 @@ func (r *Role) GetInLmt(iid string) (b bool) {
 
 //readMenu 读取所有有效菜单
 func readMenu() (menu map[string]XMenu) {
+	menu = make(map[string]XMenu)
 	qstr := `select OBJID,RW,OBJNAME,CURL,UP_OBJID from ZSKDZS_OBJINFO where STATE='1' and OBJTYPE='menu'`
 	qcstr := `OBJID,RW,OBJNAME,CURL,UP_OBJID`
 	qtstr := `string,int,string,string,string`
@@ -112,6 +115,7 @@ func readMenu() (menu map[string]XMenu) {
 
 //readRole 读取所有角色
 func readRole() (role map[string]string) {
+	role = make(map[string]string)
 	qstr := `select GRPID,GRPNAME from ZSKDZS_GROUP`
 	qcstr := `GRPID,GRPNAME`
 	qtstr := `string,string`
@@ -169,6 +173,7 @@ func menuLevel(menu map[string]XMenu) (m []LMenu) {
 			delete(menu, i)
 		}
 	}
+	//log.Println(temp)
 	temp = menuSort(temp)
 	for _, vv := range temp {
 		temp1 := make([]LMenu, 0)
