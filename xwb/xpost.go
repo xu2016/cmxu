@@ -1,8 +1,8 @@
 package xwb
 
 import (
+	"errors"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 )
@@ -23,19 +23,20 @@ func XPost(urlstr, qstr, qcstr, qtstr string, rr interface{}) (flag int, err err
 	flag = PostSuc
 	resp, err := http.PostForm(urlstr, url.Values{"qstr": {qstr}, "qcstr": {qcstr}, "qtstr": {qtstr}})
 	if err != nil {
-		log.Println("XPost post err:", err)
+		err = errors.New("xwb.XPost Post提交失败:" + err.Error())
 		flag = PostERR
 		return
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Println("XPost ReadAll err:", err)
+		err = errors.New("xwb.XPost 读取HTML内容失败:" + err.Error())
 		flag = ReadERR
 		return
 	}
 	err = UJSON(body, rr)
 	if err != nil {
+		err = errors.New("xwb.XPost 解析JSON失败:" + err.Error())
 		flag = UJsonERR
 	}
 	return

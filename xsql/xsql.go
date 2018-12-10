@@ -31,7 +31,7 @@ type RJSON struct {
 }
 
 //Init ...
-func (rp RJSON) Init() {
+func (rp *RJSON) Init() {
 	rp.Code = 1
 	rp.Msg = "失败"
 }

@@ -14,7 +14,6 @@ func (xdb *CXSql) Deleteline(qstr string) (err error) {
 	defer db.Close()
 	_, err = db.Exec(qstr)
 	if err != nil {
-		log.Println(err)
 		log.Println(qstr)
 		return
 	}

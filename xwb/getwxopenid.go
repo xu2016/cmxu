@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -34,18 +33,19 @@ func GetOpenID(wxAppID, wxAppSecret, wxcode string) (openid string, err error) {
 	resp, err := http.Get(url)
 	openid = "0"
 	if err != nil {
-		log.Println(err)
+		err = errors.New("xwb.GetOpenID Get提交失败:" + err.Error())
 		return
 	}
 
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
+		err = errors.New("xwb.GetOpenID 读取HTML内容失败:" + err.Error())
 		return
 	}
 	json.Unmarshal([]byte(body), &wx)
 	if wx.Openid == "" {
-		log.Println(wx.Errmsg)
+		err = errors.New("xwb.GetOpenID wx.Errmsg:" + err.Error())
 		openid = "0"
 		err = errors.New(wx.Errmsg)
 	} else {
