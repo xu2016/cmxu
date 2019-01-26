@@ -47,7 +47,7 @@ func (sm *SManager) GC() {
 }
 
 //Set 添加Session
-func (sm *SManager) Set(phone string, gid string) (sid string, err error) {
+func (sm *SManager) Set(phone string, gid string, city string) (sid string, err error) {
 	sm.lock.Lock()
 	defer sm.lock.Unlock()
 	sid = sm.createsid(phone)
@@ -59,6 +59,7 @@ func (sm *SManager) Set(phone string, gid string) (sid string, err error) {
 	zs.timeAccessed = time.Now()
 	zs.gid = gid
 	zs.uid = phone
+	zs.city = city
 	sm.sid[sid] = zs
 	return
 }

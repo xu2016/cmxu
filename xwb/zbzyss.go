@@ -29,7 +29,7 @@ type ZBZYInfo struct {
 }
 
 //Zbzyss 资源搜索
-func Zbzyss(lng, lat, juli float64, cnt int, database string) (zbzy []ZBZYInfo, err error) {
+func Zbzyss(lng, lat, juli float64, cnt int, database string, ctbl string) (zbzy []ZBZYInfo, err error) {
 	//log.Println(lng, lat, juli, cnt, database)
 	zbzy = make([]ZBZYInfo, 0)
 	db, err := sql.Open("mysql", database)
@@ -47,7 +47,7 @@ func Zbzyss(lng, lat, juli float64, cnt int, database string) (zbzy []ZBZYInfo, 
 		cntstr = ` LIMIT ` + strconv.Itoa(cnt)
 	}
 	qstr := `SELECT sbid,yf,accessdy,wsbbdjd,wsbbdwd,slsb,wydks,sbaddress,fgfw,statename,sfxcflag,sfxc,sfxnflag,sfxn,updateflag,zwlx,tjlx,` +
-		jstr + `AS juli FROM ZSKDZS_FGQMX WHERE statename='正常'` + julistr + ` ORDER BY juli ASC` + cntstr
+		jstr + `AS juli FROM ` + ctbl + ` WHERE statename='正常'` + julistr + ` ORDER BY juli ASC` + cntstr
 	//log.Println(qstr)
 	rows, err := db.Query(qstr)
 	if err != nil {

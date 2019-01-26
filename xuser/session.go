@@ -11,6 +11,7 @@ type ZSession struct {
 	uid          string    //用户账号
 	timeAccessed time.Time //最后访问时间
 	gid          string    //群组ID
+	city         string    //地市
 }
 
 //GetUID 获取用户账号
@@ -22,6 +23,12 @@ func (zs *ZSession) GetUID() (uid string) {
 //GetGID 获取用户账号
 func (zs *ZSession) GetGID() (gid string) {
 	gid = zs.gid
+	return
+}
+
+//GetCity 获取用户所属地市
+func (zs *ZSession) GetCity() (city string) {
+	city = zs.city
 	return
 }
 
