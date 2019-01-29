@@ -42,16 +42,19 @@ func Getyzm(w http.ResponseWriter, r *http.Request, sdkappid, appkey, database, 
 		"extend": "",
 		"params": [
 			"` + random + `",
+			"1",
+			"1",
+			"1",
 			"1"
 		],
 		"sig": "` + sig + `",
-		"sign": "中山资源核查工具",
+		"sign": "中山联通",
 		"tel": {
 			"mobile": "` + r.FormValue("phone") + `",
 			"nationcode": "86"
 		},
 		"time": ` + tm + `,
-		"tpl_id": 162364
+		"tpl_id": 274658
 	}`)
 	url := `https://yun.tim.qq.com/v5/tlssmssvr/sendsms?sdkappid=` + sdkappid + `&random=` + random
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
