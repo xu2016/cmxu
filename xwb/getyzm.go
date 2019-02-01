@@ -5,7 +5,9 @@ import (
 	"cmxu/xcm"
 	"cmxu/xsql"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -25,6 +27,61 @@ type YzmJkInfo struct {
 	Ext    string `json:"ext"`
 	Fee    int    `json:"fee"`
 	Sid    string `json:"sid"`
+}
+
+/*SendTxYzm 发送腾讯平台短信
+**phone:要发送的号码
+**sdkappid:腾讯短信平台SDK APPID
+**appkey:腾讯短信平台APP KEY
+**params:腾讯短信平台短信模板中需要修改的内容，具体格式如下：
+**     "内容1",
+**     "内容2",
+**     "内容3",
+**     "内容4",
+**     "....",
+**     "内容n"
+**sign:短信标题，腾讯短信平台短信模板的标题内容。
+**tplid:腾讯短信平台短信模板的模板ID。
+**random:随机验证码，可以为空字符串。
+ */
+func SendTxYzm(phone, sdkappid, appkey, params, sign, tplid, random string) (err error) {
+	tm := strconv.FormatInt(time.Now().Unix(), 10)
+	str := `appkey=` + appkey + `&random=` + random + `&time=` + tm + `&mobile=` + phone
+	sig := xcm.GetSHA256(str)
+	jsonStr := []byte(`{
+		"ext": "",
+		"extend": "",
+		"params": [` + params + `],
+		"sig": "` + sig + `",
+		"sign": "` + sign + `",
+		"tel": {
+			"mobile": "` + phone + `",
+			"nationcode": "86"
+		},
+		"time": ` + tm + `,
+		"tpl_id": ` + tplid + `
+	}`)
+	log.Println(string(jsonStr))
+	url := `https://yun.tim.qq.com/v5/tlssmssvr/sendsms?sdkappid=` + sdkappid + `&random=` + random
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+	req.Header.Set("Content-Type", "application/json")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return
+	}
+	wx := &YzmJkInfo{}
+	json.Unmarshal([]byte(body), &wx)
+	if wx.Result != 0 {
+		err = errors.New(wx.Errmsg)
+		return
+	}
+	return
 }
 
 //Getyzm 生成并发送验证码
