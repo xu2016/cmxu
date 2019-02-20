@@ -61,23 +61,28 @@ func SendTxYzm(phone, sdkappid, appkey, params, sign, tplid, random string) (err
 		"time": ` + tm + `,
 		"tpl_id": ` + tplid + `
 	}`)
-	log.Println(string(jsonStr))
+	//log.Println(string(jsonStr))
 	url := `https://yun.tim.qq.com/v5/tlssmssvr/sendsms?sdkappid=` + sdkappid + `&random=` + random
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
 	req.Header.Set("Content-Type", "application/json")
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
+		log.Println(err)
 		return
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
+		log.Println(err)
 		return
 	}
 	wx := &YzmJkInfo{}
 	json.Unmarshal([]byte(body), &wx)
+	log.Println(wx.Result)
+	log.Println(wx.Errmsg)
 	if wx.Result != 0 {
+		log.Println(wx.Errmsg)
 		err = errors.New(wx.Errmsg)
 		return
 	}
