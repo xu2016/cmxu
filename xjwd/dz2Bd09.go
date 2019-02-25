@@ -1,4 +1,4 @@
-package xwb
+package xjwd
 
 import (
 	"encoding/json"
@@ -18,9 +18,9 @@ type locationJSON struct {
 	Lat float64 `json:"lat"`
 }
 
-//AddresstoBd09 把地址转换成BD09ll坐标系
+//Dz2Bd09 把地址转换成BD09ll坐标系
 //url=http://api.map.baidu.com/geocoder/v2/?address=北京市海淀区上地十街10号&output=json&ak=您的ak&callback=showLocation
-func AddresstoBd09(url string, address, key string) (bd09lng, bd09lat float64, err error) {
+func Dz2Bd09(url string, address, key string) (bd09lng, bd09lat float64, err error) {
 	var bd addresstoBd09JSON
 	bd.Status = 1
 	resp, err := http.Get(url + "?address=" + address + "&output=json&ak=" + key)

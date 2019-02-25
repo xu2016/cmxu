@@ -1,4 +1,4 @@
-package xwb
+package xjwd
 
 import (
 	"encoding/json"
@@ -54,10 +54,9 @@ type zb2dzResultJSON struct {
 	Sematic_description string `json:"sematic_description"`
 }
 
-//Bd09toAddress 把BD09ll坐标系转换成地址
+//Bd09toDz 把BD09ll坐标系转换成地址
 //url=http://api.map.baidu.com/geocoder/v2/?location=22.513980293547004,113.4318358709309&output=json&pois=0&ak=FgDPj4Ey2493stHqR6Ns2SiLCwD8VPqT
-func Bd09toAddress(url string, lng, lat float64, key string) (Formatted_address, sematic_description string, err error) {
-	//log.Println(lng, lat)
+func Bd09toDz(url string, lng, lat float64, key string) (Formatted_address, sematic_description string, err error) {
 	var bd bd09toaddressJSON
 	bd.Status = 1
 	resp, err := http.Get(url + "?location=" + strconv.FormatFloat(lat, 'f', -1, 64) + "," + strconv.FormatFloat(lng, 'f', -1, 64) + "&output=json&pois=0&ak=" + key)
@@ -70,7 +69,6 @@ func Bd09toAddress(url string, lng, lat float64, key string) (Formatted_address,
 		return
 	}
 	err = json.Unmarshal([]byte(body), &bd)
-	//log.Println(string(body), bd)
 	if bd.Status == 0 {
 		Formatted_address = bd.Result.Formatted_address
 		sematic_description = bd.Result.Sematic_description
