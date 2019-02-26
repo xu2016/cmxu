@@ -16,7 +16,7 @@ func EarthDistance(lat1, lng1, lat2, lng2 float64) float64 {
 	lat1 = lat1 * Rad
 	lat2 = lat2 * Rad
 	theta := lng2*Rad - lng1*Rad
-	return (math.Acos(math.Sin(lat1)*math.Sin(lat2)+math.Cos(lat1)*math.Cos(lat2)*math.Cos(theta)) * ER) / 1000
+	return math.Floor(math.Acos(math.Sin(lat1)*math.Sin(lat2)+math.Cos(lat1)*math.Cos(lat2)*math.Cos(theta))*ER + 0.5)
 }
 
 //LngLatRange 获取距离经纬度为(lng,lat)的点距离为d的圆的外接正方形上下经纬度边界
