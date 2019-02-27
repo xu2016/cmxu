@@ -9,7 +9,7 @@ import (
 
 //EXPost post方法提交
 func EXPost(cstr map[string]string, urlstr string) (body []byte, err error) {
-	var urlValues url.Values
+	urlValues := url.Values{}
 	for k, v := range cstr {
 		urlValues.Add(k, v)
 	}
