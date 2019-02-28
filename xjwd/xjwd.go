@@ -29,3 +29,32 @@ func LngLatRange(lat, lng, d float64) (minLat, maxLat, maxLng, minLng float64) {
 	minLng = lng - lngR   //最小经度
 	return
 }
+
+const xpi = 3.14159265358979324 * 3000.0 / 180.0
+const pi = 3.1415926535897932384626
+const a = 6378245.0
+const ee = 0.00669342162296594323
+
+/*Bd09ToGcj02 百度坐标系 (BD-09) -> 火星坐标系 (GCJ-02)
+ * 即 百度 转 谷歌、高德
+ */
+func Bd09ToGcj02(blng, blat float64) (glng, glat float64) {
+	x := blng - 0.0065
+	y := blat - 0.006
+	z := math.Sqrt(x*x+y*y) - 0.00002*math.Sin(y*xpi)
+	theta := math.Atan2(y, x) - 0.000003*math.Cos(x*xpi)
+	glng = z * math.Cos(theta)
+	glat = z * math.Sin(theta)
+	return
+}
+
+/*Gcj02ToBd09 火星坐标系 (GCJ-02) ->百度坐标系 (BD-09)
+ * 即谷歌、高德 转 百度
+ */
+func Gcj02ToBd09(glng, glat float64) (blng, blat float64) {
+	z := math.Sqrt(glng*glng+glat*glat) + 0.00002*math.Sin(glat*xpi)
+	theta := math.Atan2(glat, glng) + 0.000003*math.Cos(glng*xpi)
+	blng = z*math.Cos(theta) + 0.0065
+	blat = z*math.Sin(theta) + 0.006
+	return
+}
