@@ -79,8 +79,6 @@ func SendTxYzm(phone, sdkappid, appkey, params, sign, tplid, random string) (err
 	}
 	wx := &YzmJkInfo{}
 	json.Unmarshal([]byte(body), &wx)
-	log.Println(wx.Result)
-	log.Println(wx.Errmsg)
 	if wx.Result != 0 {
 		log.Println(wx.Errmsg)
 		err = errors.New(wx.Errmsg)
