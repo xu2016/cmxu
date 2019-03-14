@@ -14,8 +14,6 @@ func main() {
 	fmt.Println(xtsz.Menus[2])
 	fmt.Println("*********4444444444444********")
 	fmt.Println(xtsz.Menus[3])
-	fmt.Println("*********5555555555555********")
-	fmt.Println(xtsz.Menus[4])
 	fmt.Println(xtsz.MenuSort)
 	t := map[string]int{
 		`ddgl`: 31, `sjfx`: 63, `zygl`: 63, `qxsz`: 1,

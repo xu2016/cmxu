@@ -61,19 +61,19 @@ var Menus = []Menu{
 			{Key: `yhgl`, Name: `用户管理`},
 		},
 	},
-	{
-		Key:      `xtsz`,
-		Name:     `系统设置`,
-		IconType: `setting`,
-		SubMenu: []SubMenus{
-			{Key: `mmxg`, Name: `密码修改`},
-			{Key: `zlxg`, Name: `资料修改`},
-		},
+}
+var xtsz = Menu{
+	Key:      `xtsz`,
+	Name:     `系统设置`,
+	IconType: `setting`,
+	SubMenu: []SubMenus{
+		{Key: `mmxg`, Name: `密码修改`},
+		{Key: `zlxg`, Name: `资料修改`},
 	},
 }
 
 //MenuSort 一级菜单的排序
-var MenuSort = map[string]int{`ddgl`: 1, `zygl`: 2, `sjfx`: 3, `qxsz`: 4, `xtsz`: 5}
+var MenuSort = map[string]int{`ddgl`: 1, `zygl`: 2, `sjfx`: 3, `qxsz`: 4}
 
 func Getmenu(grpids map[string]int) (rmenu []Menu) {
 	rmenu = make([]Menu, 0)
@@ -93,5 +93,6 @@ func Getmenu(grpids map[string]int) (rmenu []Menu) {
 			rmenu = append(rmenu, xmm)
 		}
 	}
+	rmenu = append(rmenu, xtsz)
 	return
 }
