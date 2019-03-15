@@ -11,6 +11,7 @@ type ZSession struct {
 	uid          string         //用户账号
 	timeAccessed time.Time      //最后访问时间
 	gid          map[string]int //群组ID
+	phone        string         //用户手机号
 	city         string         //地市
 }
 
