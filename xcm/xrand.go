@@ -126,3 +126,18 @@ func GetRandomID(s1, s2 string, min, max int) string {
 	rd, _ := GetRandomInt(min, max)
 	return s1 + s2 + strconv.Itoa(rd)
 }
+
+//NumCodeStr 对小于62的数进行1位编码
+func NumCodeStr(n []int) (NumStr string, err error) {
+	bytes := []byte(keystr)
+	err = nil
+	for _, v := range n {
+		if v > 61 {
+			err = errors.New("number too big")
+			NumStr = ""
+			return
+		}
+		NumStr += string(bytes[v])
+	}
+	return
+}
