@@ -2,6 +2,7 @@ package xuser
 
 import (
 	"cmxu/xcm"
+	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -71,6 +72,7 @@ func (sm *SManager) UserIsLogin(r *http.Request, grptp string, subMenuNum int) (
 	defer sm.lock.Unlock()
 	cookie, err := r.Cookie(sm.cookieName)
 	if err != nil {
+		log.Println(err)
 		return
 	}
 	sid := cookie.Value
@@ -90,7 +92,7 @@ func (sm *SManager) UserIsLogin(r *http.Request, grptp string, subMenuNum int) (
 	zs.timeAccessed = time.Now()
 	sm.sid[sid] = zs
 	//判断用户是否有访问权限
-	if ((zs.gid[grptp] >> uint(subMenuNum)) & 1) == 1 {
+	if ((zs.gid[grptp] >> uint(subMenuNum-1)) & 1) == 1 {
 		b = true
 	}
 	return
