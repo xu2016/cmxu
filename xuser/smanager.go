@@ -98,6 +98,34 @@ func (sm *SManager) UserIsLogin(r *http.Request, grptp string, subMenuNum int) (
 	return
 }
 
+//IndexUserIsLogin 刷新时判断用户是否登陆
+func (sm *SManager) IndexUserIsLogin(r *http.Request) (gid map[string]int, b bool) {
+	sm.lock.Lock()
+	defer sm.lock.Unlock()
+	cookie, err := r.Cookie(sm.cookieName)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	sid := cookie.Value
+	if sid == "" {
+		return
+	}
+	//判断Session是否存在
+	zs, ok := sm.sid[sid]
+	if !ok {
+		return
+	}
+	//判断Session是否过期
+	if (zs.timeAccessed.Unix() + sm.maxlifetime) < time.Now().Unix() {
+		return
+	}
+	//更新Session最近访问时间
+	zs.timeAccessed = time.Now()
+	sm.sid[sid] = zs
+	return zs.gid, true
+}
+
 //AddUserLogin 用户登陆添加Session
 func (sm *SManager) AddUserLogin(w http.ResponseWriter, userid, phone, city string, gid map[string]int) (b bool) {
 	sm.lock.Lock()
