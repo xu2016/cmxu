@@ -99,7 +99,7 @@ func (sm *SManager) UserIsLogin(r *http.Request, grptp string, subMenuNum int) (
 }
 
 //IndexUserIsLogin 刷新时判断用户是否登陆
-func (sm *SManager) IndexUserIsLogin(r *http.Request) (gid map[string]int, b bool) {
+func (sm *SManager) IndexUserIsLogin(r *http.Request) (gid map[string]int, uid, phone, city string, b bool) {
 	sm.lock.Lock()
 	defer sm.lock.Unlock()
 	cookie, err := r.Cookie(sm.cookieName)
@@ -123,7 +123,12 @@ func (sm *SManager) IndexUserIsLogin(r *http.Request) (gid map[string]int, b boo
 	//更新Session最近访问时间
 	zs.timeAccessed = time.Now()
 	sm.sid[sid] = zs
-	return zs.gid, true
+	gid = zs.gid
+	phone = zs.phone
+	city = zs.city
+	uid = zs.uid
+	b = true
+	return
 }
 
 //AddUserLogin 用户登陆添加Session
