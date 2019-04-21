@@ -1,5 +1,12 @@
 package kdjson
 
+//DscxInfo ...
+type DscxInfo struct {
+	Code int      `json:"code"`
+	Msg  string   `json:"msg"`
+	Data []string `json:"data"`
+}
+
 //ZYInfo 返回的资源信息结构体
 type ZYInfo struct {
 	City       string  `json:"city"`       //归属地市
