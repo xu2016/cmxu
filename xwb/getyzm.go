@@ -68,19 +68,19 @@ func SendTxYzm(phone, sdkappid, appkey, params, sign, tplid, random string) (err
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Println(err)
+		log.Println(phone+":", err)
 		return
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Println(err)
+		log.Println(phone+":", err)
 		return
 	}
 	wx := &YzmJkInfo{}
 	json.Unmarshal([]byte(body), &wx)
 	if wx.Result != 0 {
-		log.Println(wx.Errmsg)
+		log.Println(phone+":", wx.Errmsg)
 		err = errors.New(wx.Errmsg)
 		return
 	}
