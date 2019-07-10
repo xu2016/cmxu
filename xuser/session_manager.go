@@ -2,7 +2,7 @@ package xuser
 
 import (
 	"cmxu/xcm"
-	"log"
+	"errors"
 	"net/http"
 	"sync"
 	"time"
@@ -14,7 +14,7 @@ var Gsm *SManager
 //SManager Session管理器
 type SManager struct {
 	cookieName  string             //private cookiename
-	lock        sync.Mutex         // protects session
+	lock        sync.RWMutex       // protects session
 	sid         map[string]session //session id 唯一标示
 	maxlifetime int64
 }
@@ -46,112 +46,56 @@ func (sm *SManager) GC() {
 	time.AfterFunc(time.Duration(sm.maxlifetime*2), func() { sm.GC() })
 }
 
-//GetUserCity 获取用户所属地市
-func (sm *SManager) GetUserCity(r *http.Request) (city string) {
+//UserIsLogin 判断用户是否登陆
+func (sm *SManager) UserIsLogin(r *http.Request) (sid string, err error) {
 	sm.lock.Lock()
 	defer sm.lock.Unlock()
 	cookie, err := r.Cookie(sm.cookieName)
 	if err != nil {
 		return
 	}
-	sid := cookie.Value
+	sid = cookie.Value
 	if sid == "" {
-		return
-	}
-	zs, ok := sm.sid[sid]
-	if !ok {
-		return
-	}
-	city = zs.city
-	return
-}
-
-//UserIsLogin 判断用户是否登陆和是否有访问权限
-func (sm *SManager) UserIsLogin(r *http.Request, grptp string, subMenuNum int) (b bool) {
-	sm.lock.Lock()
-	defer sm.lock.Unlock()
-	cookie, err := r.Cookie(sm.cookieName)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	sid := cookie.Value
-	if sid == "" {
+		err = errors.New("No session")
 		return
 	}
 	//判断Session是否存在
 	zs, ok := sm.sid[sid]
 	if !ok {
+		err = errors.New("No session")
 		return
 	}
 	//判断Session是否过期
 	if (zs.timeAccessed.Unix() + sm.maxlifetime) < time.Now().Unix() {
+		err = errors.New("Session time is out")
 		return
 	}
 	//更新Session最近访问时间
 	zs.timeAccessed = time.Now()
 	sm.sid[sid] = zs
-	//判断用户是否有访问权限
-	if ((zs.gid[grptp] >> uint(subMenuNum-1)) & 1) == 1 {
-		b = true
-	}
-	return
-}
-
-//IndexUserIsLogin 刷新时判断用户是否登陆
-func (sm *SManager) IndexUserIsLogin(r *http.Request) (gid map[string]int, uid, phone, city string, b bool) {
-	sm.lock.Lock()
-	defer sm.lock.Unlock()
-	cookie, err := r.Cookie(sm.cookieName)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	sid := cookie.Value
-	if sid == "" {
-		return
-	}
-	//判断Session是否存在
-	zs, ok := sm.sid[sid]
-	if !ok {
-		return
-	}
-	//判断Session是否过期
-	if (zs.timeAccessed.Unix() + sm.maxlifetime) < time.Now().Unix() {
-		return
-	}
-	//更新Session最近访问时间
-	zs.timeAccessed = time.Now()
-	sm.sid[sid] = zs
-	gid = zs.gid
-	phone = zs.phone
-	city = zs.city
-	uid = zs.uid
-	b = true
 	return
 }
 
 //AddUserLogin 用户登陆添加Session
-func (sm *SManager) AddUserLogin(w http.ResponseWriter, userid, phone, city string, gid map[string]int) (b bool) {
+func (sm *SManager) AddUserLogin(w http.ResponseWriter, userid, phone, city string, gid map[string]int) (err error) {
 	sm.lock.Lock()
 	defer sm.lock.Unlock()
 	sid := xcm.GetMD5(phone + userid + city + xcm.GetRandomString(8, xcm.NSDSTR))
 	if sid == "" {
+		err = errors.New("Add  session error")
 		return
 	}
 	zs := session{uid: userid, phone: phone, gid: gid, city: city, timeAccessed: time.Now()}
 	sm.sid[sid] = zs
 	cookie := http.Cookie{Name: sm.cookieName, Value: sid, Path: "/", HttpOnly: true}
 	http.SetCookie(w, &cookie)
-	b = true
 	return
 }
 
 //DelUserLogin 用户注销删除Session
-func (sm *SManager) DelUserLogin(w http.ResponseWriter, r *http.Request) (b bool) {
+func (sm *SManager) DelUserLogin(w http.ResponseWriter, r *http.Request) (err error) {
 	sm.lock.Lock()
 	defer sm.lock.Unlock()
-	b = true
 	cookie, err := r.Cookie(sm.cookieName)
 	if err != nil {
 		return
@@ -164,19 +108,12 @@ func (sm *SManager) DelUserLogin(w http.ResponseWriter, r *http.Request) (b bool
 }
 
 //GetUserID 获取用户ID
-func (sm *SManager) GetUserID(r *http.Request) (uid string) {
-	sm.lock.Lock()
-	defer sm.lock.Unlock()
-	cookie, err := r.Cookie(sm.cookieName)
-	if err != nil {
-		return
-	}
-	sid := cookie.Value
-	if sid == "" {
-		return
-	}
+func (sm *SManager) GetUserID(sid string) (uid string, err error) {
+	sm.lock.RLock()
+	defer sm.lock.RUnlock()
 	zs, ok := sm.sid[sid]
 	if !ok {
+		err = errors.New("No session")
 		return
 	}
 	uid = zs.uid
@@ -184,21 +121,32 @@ func (sm *SManager) GetUserID(r *http.Request) (uid string) {
 }
 
 //GetUserPhone 获取用户phone
-func (sm *SManager) GetUserPhone(r *http.Request) (phone string) {
-	sm.lock.Lock()
-	defer sm.lock.Unlock()
-	cookie, err := r.Cookie(sm.cookieName)
-	if err != nil {
+func (sm *SManager) GetUserPhone(sid string) (phone string, err error) {
+	sm.lock.RLock()
+	defer sm.lock.RUnlock()
+	zs, ok := sm.sid[sid]
+	if !ok {
+		err = errors.New("No session")
 		return
 	}
-	sid := cookie.Value
-	if sid == "" {
-		return
-	}
+	phone = zs.phone
+	return
+}
+
+//GetUserCity 获取用户所属地市
+func (sm *SManager) GetUserCity(sid string) (city string) {
+	sm.lock.RLock()
+	defer sm.lock.RUnlock()
 	zs, ok := sm.sid[sid]
 	if !ok {
 		return
 	}
-	phone = zs.phone
+	city = zs.city
+	return
+}
+
+//GetUserAuth 判断用户是否有访问权限
+func (sm *SManager) GetUserAuth(sid string) (b bool) {
+
 	return
 }

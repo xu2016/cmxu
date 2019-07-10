@@ -3,7 +3,7 @@ package xcm
 //时间操作相关函数
 import "time"
 
-//ReturnTime 返回调用时整型的年、月、日、时、分、秒
+//ReturnTime 返回函数调用这个时间点的整型的年、月、日、时、分、秒
 func ReturnTime() (Year, Month, Day, Hour, Minute, Second int) {
 	Year = time.Now().Year()
 	Month = int(time.Now().Month())
@@ -11,6 +11,17 @@ func ReturnTime() (Year, Month, Day, Hour, Minute, Second int) {
 	Hour = time.Now().Hour()
 	Minute = time.Now().Minute()
 	Second = time.Now().Second()
+	return
+}
+
+//GetTime 返回指定时间的整型的年、月、日、时、分、秒
+func GetTime(tm time.Time) (Year, Month, Day, Hour, Minute, Second int) {
+	Year = tm.Year()
+	Month = int(tm.Month())
+	Day = tm.Day()
+	Hour = tm.Hour()
+	Minute = tm.Minute()
+	Second = tm.Second()
 	return
 }
 
