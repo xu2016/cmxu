@@ -2,6 +2,7 @@ package xuser
 
 import (
 	"cmxu/xcm"
+	"errors"
 	"strconv"
 	"strings"
 	"time"
@@ -56,8 +57,12 @@ func (ukm *UniKeyManager) RunUniKey(ukname string, min, max int) {
 类型（位数具体确定）+年（4位）月（1位）日（1位）时（1位）分（2位）秒（2位）+随机位（位数具体由生成NewUniKey确定）
 key的总长度:len(idtype)+11+len(max)
 */
-func (ukm *UniKeyManager) GetUniKey(ukname, idtype string) (id string) {
-	rnx := <-ukm.uks[ukname]
+func (ukm *UniKeyManager) GetUniKey(ukname, idtype string) (id string, err error) {
+	rnx, ok := <-ukm.uks[ukname]
+	if !ok {
+		err = errors.New("get unikey error")
+		return
+	}
 	tm := time.Unix(rnx.USecond, 0)
 	yy, mm, dd, hh, ii, ss := xcm.GetTime(tm)
 	id = strings.ToUpper(idtype) + strconv.Itoa(yy) + keyStr24[mm] + keyStr24[dd] +
