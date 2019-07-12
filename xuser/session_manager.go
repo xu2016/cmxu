@@ -21,11 +21,11 @@ type SManager struct {
 
 //session session存储结构
 type session struct {
-	uid          string         //用户账号
-	timeAccessed time.Time      //最后访问时间
-	gid          map[string]int //群组ID
-	phone        string         //用户手机号
-	city         string         //地市
+	uid          string    //用户账号
+	timeAccessed time.Time //最后访问时间
+	rid          []string  //角色组
+	phone        string    //用户手机号
+	city         string    //地市
 }
 
 //NewSessionManager 参加一个Session管理器
@@ -77,7 +77,7 @@ func (sm *SManager) UserIsLogin(r *http.Request) (sid string, err error) {
 }
 
 //AddUserLogin 用户登陆添加Session
-func (sm *SManager) AddUserLogin(w http.ResponseWriter, userid, phone, city string, gid map[string]int) (err error) {
+func (sm *SManager) AddUserLogin(w http.ResponseWriter, userid, phone, city string, rid []string) (err error) {
 	sm.lock.Lock()
 	defer sm.lock.Unlock()
 	sid := xcm.GetMD5(phone + userid + city + xcm.GetRandomString(8, xcm.NSDSTR))
@@ -85,7 +85,7 @@ func (sm *SManager) AddUserLogin(w http.ResponseWriter, userid, phone, city stri
 		err = errors.New("Add  session error")
 		return
 	}
-	zs := session{uid: userid, phone: phone, gid: gid, city: city, timeAccessed: time.Now()}
+	zs := session{uid: userid, phone: phone, rid: rid, city: city, timeAccessed: time.Now()}
 	sm.sid[sid] = zs
 	cookie := http.Cookie{Name: sm.cookieName, Value: sid, Path: "/", HttpOnly: true}
 	http.SetCookie(w, &cookie)
@@ -142,6 +142,18 @@ func (sm *SManager) GetUserCity(sid string) (city string) {
 		return
 	}
 	city = zs.city
+	return
+}
+
+//GetUserRoles 获取用户角色组
+func (sm *SManager) GetUserRoles(sid string) (rid []string) {
+	sm.lock.RLock()
+	defer sm.lock.RUnlock()
+	zs, ok := sm.sid[sid]
+	if !ok {
+		return
+	}
+	rid = zs.rid
 	return
 }
 

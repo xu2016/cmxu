@@ -2,6 +2,7 @@ package xsqlx
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 )
 
@@ -12,18 +13,54 @@ import (
 		  Oracle：:1,:2,.....,:n
 		注意：在qstr中要处理好可能出现NULL的情况，比如在Oracle中，nvl(字段，为NULL是的值)
 	val：要替换的值的slice
-	colnum：需要取的字段长度。
-  return：返回结果是一个字符串slice，请获取到数据后自行进行数据转换,操作错误err。
+	col：需要取的字段的slice。
+	coltype：需要取的字段所对应的数据类型，包括int8,uint8,int16,uint16,int32,uint32,int64,uint64,int,uint,float32,float64,bool,string
+  return：返回结果是一个map[string]interface{}，请获取到数据后自行进行数据转换,操作错误err。
 */
-func (xdb *CXSqlx) QueryLine(qstr string, val []interface{}, colnum int) (gdata []string, err error) {
+func (xdb *CXSqlx) QueryLine(qstr string, val []interface{}, col []string, coltype []string) (gdata map[string]interface{}, err error) {
 	db, err := sql.Open(xdb.dbtype, xdb.db)
 	if err != nil {
 		return
 	}
 	defer db.Close()
-	sci := make([]interface{}, colnum)
+	if len(col) == 0 || len(col) != len(coltype) {
+		err = errors.New("参数有误")
+		return
+	}
+	sci := make([]interface{}, len(col))
 	for i := range sci {
-		sci[i] = new(string)
+		switch coltype[i] {
+		case `int8`:
+			sci[i] = new(int8)
+		case ` uint8`:
+			sci[i] = new(uint8)
+		case `int16`:
+			sci[i] = new(int16)
+		case `uint16`:
+			sci[i] = new(uint16)
+		case `int32`:
+			sci[i] = new(int32)
+		case `uint32`:
+			sci[i] = new(uint32)
+		case `int64`:
+			sci[i] = new(int64)
+		case `uint64`:
+			sci[i] = new(uint64)
+		case `int`:
+			sci[i] = new(int)
+		case `uint`:
+			sci[i] = new(uint)
+		case `float32`:
+			sci[i] = new(float32)
+		case `float64`:
+			sci[i] = new(float64)
+		case `string`:
+			sci[i] = new(string)
+		case `bool`:
+			sci[i] = new(bool)
+		default:
+			sci[i] = new(string)
+		}
 	}
 	row := db.QueryRow(qstr, val...)
 	if err != nil {
@@ -33,11 +70,43 @@ func (xdb *CXSqlx) QueryLine(qstr string, val []interface{}, colnum int) (gdata 
 	}
 	err = row.Scan(sci...)
 	if err != nil {
+		log.Println("Query Scan:", err)
 		return
 	}
-	ds := make([]string, colnum)
+	ds := make(map[string]interface{})
 	for i, v := range sci {
-		ds[i] = *v.(*string)
+		switch coltype[i] {
+		case `int8`:
+			ds[col[i]] = *v.(*int8)
+		case ` uint8`:
+			ds[col[i]] = *v.(*uint8)
+		case `int16`:
+			ds[col[i]] = *v.(*int16)
+		case `uint16`:
+			ds[col[i]] = *v.(*uint16)
+		case `int32`:
+			ds[col[i]] = *v.(*int32)
+		case `uint32`:
+			ds[col[i]] = *v.(*uint32)
+		case `int64`:
+			ds[col[i]] = *v.(*int64)
+		case `uint64`:
+			ds[col[i]] = *v.(*uint64)
+		case `int`:
+			ds[col[i]] = *v.(*int)
+		case `uint`:
+			ds[col[i]] = *v.(*uint)
+		case `float32`:
+			ds[col[i]] = *v.(*float32)
+		case `float64`:
+			ds[col[i]] = *v.(*float64)
+		case `string`:
+			ds[col[i]] = *v.(*string)
+		case `bool`:
+			ds[col[i]] = *v.(*bool)
+		default:
+			ds[col[i]] = *v.(*string)
+		}
 	}
 	gdata = ds
 	return
@@ -50,18 +119,54 @@ func (xdb *CXSqlx) QueryLine(qstr string, val []interface{}, colnum int) (gdata 
 		  Oracle：:1,:2,.....,:n
 		注意：在qstr中要处理好可能出现NULL的情况，比如在Oracle中，nvl(字段，为NULL是的值)
 	val：要替换的值的slice
-	colnum：需要取的字段长度。
-  return：返回结果是一个二维的字符串slice，请获取到数据后自行进行数据转换。
+	col：需要取的字段的slice。
+	coltype：需要取的字段所对应的数据类型，包括int8,uint8,int16,uint16,int32,uint32,int64,uint64,int,uint,float32,float64,bool,string
+  return：返回结果是一个[]map[string]interface{}，请获取到数据后自行进行数据转换。
 */
-func (xdb *CXSqlx) Query(qstr string, val []interface{}, colnum int) (gdata [][]string, err error) {
+func (xdb *CXSqlx) Query(qstr string, val []interface{}, col []string, coltype []string) (gdata []map[string]interface{}, err error) {
 	db, err := sql.Open(xdb.dbtype, xdb.db)
 	if err != nil {
 		return
 	}
 	defer db.Close()
-	sci := make([]interface{}, colnum)
+	if len(col) == 0 || len(col) != len(coltype) {
+		err = errors.New("参数有误")
+		return
+	}
+	sci := make([]interface{}, len(col))
 	for i := range sci {
-		sci[i] = new(string)
+		switch coltype[i] {
+		case `int8`:
+			sci[i] = new(int8)
+		case ` uint8`:
+			sci[i] = new(uint8)
+		case `int16`:
+			sci[i] = new(int16)
+		case `uint16`:
+			sci[i] = new(uint16)
+		case `int32`:
+			sci[i] = new(int32)
+		case `uint32`:
+			sci[i] = new(uint32)
+		case `int64`:
+			sci[i] = new(int64)
+		case `uint64`:
+			sci[i] = new(uint64)
+		case `int`:
+			sci[i] = new(int)
+		case `uint`:
+			sci[i] = new(uint)
+		case `float32`:
+			sci[i] = new(float32)
+		case `float64`:
+			sci[i] = new(float64)
+		case `string`:
+			sci[i] = new(string)
+		case `bool`:
+			sci[i] = new(bool)
+		default:
+			sci[i] = new(string)
+		}
 	}
 	rows, err := db.Query(qstr, val...)
 	if err != nil {
@@ -74,9 +179,40 @@ func (xdb *CXSqlx) Query(qstr string, val []interface{}, colnum int) (gdata [][]
 		if err != nil {
 			continue
 		}
-		ds := make([]string, colnum)
+		ds := make(map[string]interface{})
 		for i, v := range sci {
-			ds[i] = *v.(*string)
+			switch coltype[i] {
+			case `int8`:
+				ds[col[i]] = *v.(*int8)
+			case ` uint8`:
+				ds[col[i]] = *v.(*uint8)
+			case `int16`:
+				ds[col[i]] = *v.(*int16)
+			case `uint16`:
+				ds[col[i]] = *v.(*uint16)
+			case `int32`:
+				ds[col[i]] = *v.(*int32)
+			case `uint32`:
+				ds[col[i]] = *v.(*uint32)
+			case `int64`:
+				ds[col[i]] = *v.(*int64)
+			case `uint64`:
+				ds[col[i]] = *v.(*uint64)
+			case `int`:
+				ds[col[i]] = *v.(*int)
+			case `uint`:
+				ds[col[i]] = *v.(*uint)
+			case `float32`:
+				ds[col[i]] = *v.(*float32)
+			case `float64`:
+				ds[col[i]] = *v.(*float64)
+			case `string`:
+				ds[col[i]] = *v.(*string)
+			case `bool`:
+				ds[col[i]] = *v.(*bool)
+			default:
+				ds[col[i]] = *v.(*string)
+			}
 		}
 		gdata = append(gdata, ds)
 	}
