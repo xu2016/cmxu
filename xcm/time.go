@@ -25,6 +25,11 @@ func GetTime(tm time.Time) (Year, Month, Day, Hour, Minute, Second int) {
 	return
 }
 
+//SetTimeInt8 设置20180611时间格式
+func SetTimeInt8() int {
+	return time.Now().Year()*10000 + int(time.Now().Month())*100 + time.Now().Day()
+}
+
 //SetTimeInt 设置2018061120时间格式
 func SetTimeInt() int {
 	return time.Now().Year()*1000000 + int(time.Now().Month())*10000 + time.Now().Day()*100 + time.Now().Hour()
