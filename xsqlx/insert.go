@@ -2,7 +2,6 @@ package xsqlx
 
 import (
 	"database/sql"
-	"log"
 )
 
 /*Insertline 插入一条记录
@@ -21,8 +20,8 @@ func (xdb *CXSqlx) Insertline(istr string, val []interface{}) (err error) {
 	defer db.Close()
 	_, err = db.Exec(istr, val...)
 	if err != nil {
-		log.Println("Insertline Error:", err)
-		log.Println("Insertline Sql:", istr)
+		//log.Println("Insertline Error:", err)
+		//log.Println("Insertline Sql:", istr)
 		return
 	}
 	if xdb.cmt {

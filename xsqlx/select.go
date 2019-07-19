@@ -3,7 +3,6 @@ package xsqlx
 import (
 	"database/sql"
 	"errors"
-	"log"
 )
 
 /*QueryLine 查询一条记录
@@ -64,13 +63,13 @@ func (xdb *CXSqlx) QueryLine(qstr string, val []interface{}, col []string, colty
 	}
 	row := db.QueryRow(qstr, val...)
 	if err != nil {
-		log.Println("Query Error:", err)
-		log.Println("Query Sql:", qstr)
+		//log.Println("Query Error:", err)
+		//log.Println("Query Sql:", qstr)
 		return
 	}
 	err = row.Scan(sci...)
 	if err != nil {
-		log.Println("Query Scan:", err)
+		//log.Println("Query Scan:", err)
 		return
 	}
 	ds := make(map[string]interface{})
@@ -170,8 +169,8 @@ func (xdb *CXSqlx) Query(qstr string, val []interface{}, col []string, coltype [
 	}
 	rows, err := db.Query(qstr, val...)
 	if err != nil {
-		log.Println("Query Error:", err)
-		log.Println("Query Sql:", qstr)
+		//log.Println("Query Error:", err)
+		//log.Println("Query Sql:", qstr)
 		return
 	}
 	for rows.Next() {

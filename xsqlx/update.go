@@ -2,7 +2,6 @@ package xsqlx
 
 import (
 	"database/sql"
-	"log"
 )
 
 /*Updateline 更新一条记录
@@ -21,8 +20,8 @@ func (xdb *CXSqlx) Updateline(ustr string, val []interface{}) (err error) {
 	defer db.Close()
 	_, err = db.Exec(ustr, val...)
 	if err != nil {
-		log.Println("Updateline Error:", err)
-		log.Println("Updateline Sql:", ustr)
+		//log.Println("Updateline Error:", err)
+		//log.Println("Updateline Sql:", ustr)
 		return
 	}
 	if xdb.cmt {

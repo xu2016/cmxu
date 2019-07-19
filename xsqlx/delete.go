@@ -2,7 +2,6 @@ package xsqlx
 
 import (
 	"database/sql"
-	"log"
 )
 
 /*Deleteline 删除一条记录
@@ -21,8 +20,8 @@ func (xdb *CXSqlx) Deleteline(dstr string, val []interface{}) (err error) {
 	defer db.Close()
 	_, err = db.Exec(dstr, val...)
 	if err != nil {
-		log.Println("Deleteline Error:", err)
-		log.Println("Deleteline Sql:", dstr)
+		//log.Println("Deleteline Error:", err)
+		//log.Println("Deleteline Sql:", dstr)
 		return
 	}
 	if xdb.cmt {
