@@ -37,8 +37,17 @@ func GetRandomSeedInt(min, max int, seed int64) (rd int, err error) {
 	return
 }
 
-/*GetRandomString ...
-生成随机字符串
+/*GetRandomString 生成随机字符串
+slen:生成的随机数长度
+stp:加密所选择的类型
+    NSTR   = iota //数字字符串
+	SDSTR         //小写字母字符串
+	SUSTR         //大写字母字符串
+	SASTR         //大写和小写字母字符串
+	NSDSTR        //数字和小写字母字符串
+	NSUSTR        //数字和大写字母字符串
+	NSASTR        //数字大写和小写字母字符串
+	KEYSTR        //数字大写和小写字母字符串(有序)
 */
 func GetRandomString(slen int64, stp int) string {
 	var mstr string
@@ -55,6 +64,8 @@ func GetRandomString(slen int64, stp int) string {
 		mstr = nsdstr
 	case NSUSTR:
 		mstr = nsustr
+	case KEYSTR:
+		mstr = keystr
 	default:
 		mstr = nsastr
 	}
@@ -76,7 +87,19 @@ func GetMD5(str string) (md5str string) {
 	return
 }
 
-//GetNumStr 生成数字加密字符
+/*GetNumStr 生成数字加密字符
+nm:需要加密的字符串
+stp:加密所选择的类型
+    NSTR   = iota //数字字符串
+	SDSTR         //小写字母字符串
+	SUSTR         //大写字母字符串
+	SASTR         //大写和小写字母字符串
+	NSDSTR        //数字和小写字母字符串
+	NSUSTR        //数字和大写字母字符串
+	NSASTR        //数字大写和小写字母字符串
+	KEYSTR        //数字大写和小写字母字符串(有序)
+salt:噪声
+*/
 func GetNumStr(nm string, stp int, salt int) (str string) {
 	var mstr string
 	switch stp {
@@ -92,6 +115,8 @@ func GetNumStr(nm string, stp int, salt int) (str string) {
 		mstr = nsdstr
 	case NSUSTR:
 		mstr = nsustr
+	case KEYSTR:
+		mstr = keystr
 	default:
 		mstr = nsastr
 	}
