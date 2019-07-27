@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+//GUniKey 全局唯一key管理器
+var GUniKey *CUniKey
 var keyStr = [62]string{
 	"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
 	"A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
