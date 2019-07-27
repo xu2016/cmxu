@@ -30,7 +30,9 @@ type UniKey struct {
 	Cnt     int
 }
 
-//NewUniKey 参加一个Session管理器
+/*NewUniKey 创建一个Session管理器
+uknames:每个key键表示一个UniKey生成器，value表示生成器的生成的随机数的位数。
+*/
 func NewUniKey(uknames map[string]int) (*CUniKey, error) {
 	cuk := &CUniKey{uks: make(map[string]chan UniKey)}
 	for k := range uknames {
