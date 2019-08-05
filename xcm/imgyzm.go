@@ -67,7 +67,7 @@ const (
 // CaptchaInterface captcha interface for captcha engine to to write staff
 type CaptchaInterface interface {
 	// BinaryEncoding covert to bytes
-	BinaryEncoding() []byte
+	BinaryEncoding() (bstrs []byte, err error)
 	// WriteTo output captcha entity
 	WriteTo(w io.Writer) (n int64, err error)
 }
@@ -105,7 +105,7 @@ func GetBase64ImgYzm(len, width, height int) (yzm, base64ImgStr string) {
 // CaptchaWriteToBase64Encoding converts captcha to base64 encoding string.
 // mimeType is one of "audio/wav" "image/png".
 func CaptchaWriteToBase64Encoding(cap CaptchaInterface) string {
-	binaryData := cap.BinaryEncoding()
+	binaryData, _ := cap.BinaryEncoding()
 	return fmt.Sprintf("data:%s;base64,%s", "image/png", base64.StdEncoding.EncodeToString(binaryData))
 }
 
@@ -358,7 +358,7 @@ func (captcha *CaptchaImageChar) drawTextNoise(complex int, isSimpleFont bool) e
 		rw := rand.Intn(captcha.ImageWidth)
 		rh := rand.Intn(captcha.ImageHeight)
 
-		text := randText(1, keystr)
+		text := GetRandomString(1, KEYSTR)
 		fontSize := rawFontSize/2 + float64(rand.Intn(5))
 
 		c.SetSrc(image.NewUniform(randLightColor()))
@@ -455,34 +455,29 @@ func EngineCharCreate(id string, config ConfigCharacter) *CaptchaImageChar {
 
 //BinaryEncoding save captcha image to binary.
 //保存图片到io.
-func (captcha *CaptchaImageChar) BinaryEncoding() []byte {
+func (captcha *CaptchaImageChar) BinaryEncoding() (bstrs []byte, err error) {
 	var buf bytes.Buffer
-	if err := png.Encode(&buf, captcha.nrgba); err != nil {
-		panic(err.Error())
+	if err = png.Encode(&buf, captcha.nrgba); err != nil {
+		return
 	}
-	return buf.Bytes()
+	bstrs, err = buf.Bytes(), nil
+	return
 }
 
 // WriteTo writes captcha image in PNG format into the given writer.
-func (captcha *CaptchaImageChar) WriteTo(w io.Writer) (int64, error) {
-	n, err := w.Write(captcha.BinaryEncoding())
-	return int64(n), err
-}
-
-//randText create random text. 生成随机文本.
-func randText(num int, sourceChars string) string {
-	textNum := len(sourceChars)
-	text := ""
-	r := randSeed()
-	for i := 0; i < num; i++ {
-		text = text + string(sourceChars[r.Intn(textNum)])
+func (captcha *CaptchaImageChar) WriteTo(w io.Writer) (m int64, err error) {
+	b, err := captcha.BinaryEncoding()
+	if err != nil {
+		return
 	}
-	return text
+	n, err := w.Write(b)
+	m = int64(n)
+	return
 }
 
 //Random get random in min between max. 生成指定大小的随机数.
 func random(min int64, max int64) float64 {
-	r := randSeed()
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	if max <= min {
 		panic(fmt.Sprintf("invalid range %d >= %d", max, min))
 	}
@@ -502,7 +497,7 @@ func random(min int64, max int64) float64 {
 
 //randDeepColor get random deep color. 随机生成深色系.
 func randDeepColor() color.RGBA {
-	r := randSeed()
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	randColor := randColor()
 	increase := float64(30 + r.Intn(255))
 	red := math.Abs(math.Min(float64(randColor.R)-increase, 255))
@@ -513,19 +508,16 @@ func randDeepColor() color.RGBA {
 
 //randLightColor get random ligth color. 随机生成浅色.
 func randLightColor() color.RGBA {
-	r := randSeed()
-	red := r.Intn(55) + 200
-	green := r.Intn(55) + 200
-	blue := r.Intn(55) + 200
-	return color.RGBA{R: uint8(red), G: uint8(green), B: uint8(blue), A: uint8(255)}
+	red, _ := GetRandomInt(0, 56)
+	green, _ := GetRandomInt(0, 56)
+	blue, _ := GetRandomInt(0, 56)
+	return color.RGBA{R: uint8(red + 200), G: uint8(green + 200), B: uint8(blue + 200), A: uint8(255)}
 }
 
 //randColor get random color. 生成随机颜色.
 func randColor() color.RGBA {
-	r := randSeed()
-
-	red := r.Intn(255)
-	green := r.Intn(255)
+	red, _ := GetRandomInt(0, 256)
+	green, _ := GetRandomInt(0, 256)
 	var blue int
 	if (red + green) > 400 {
 		blue = 0
@@ -536,10 +528,6 @@ func randColor() color.RGBA {
 		blue = 255
 	}
 	return color.RGBA{R: uint8(red), G: uint8(green), B: uint8(blue), A: uint8(255)}
-}
-
-func randSeed() *rand.Rand {
-	return rand.New(rand.NewSource(time.Now().UnixNano()))
 }
 
 //readFontsToSliceOfTrueTypeFonts import fonts from dir.

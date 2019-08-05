@@ -12,7 +12,8 @@ import (
 )
 
 /*GetRandomInt 生成随机数字
- */
+[min,max)
+*/
 func GetRandomInt(min, max int) (rd int, err error) {
 	err = nil
 	if max < min {
@@ -25,7 +26,8 @@ func GetRandomInt(min, max int) (rd int, err error) {
 }
 
 /*GetRandomSeedInt 生成随机数字
- */
+[min,max)
+*/
 func GetRandomSeedInt(min, max int, seed int64) (rd int, err error) {
 	err = nil
 	if max < min {
