@@ -69,6 +69,12 @@ func (cuk *CUniKey) RunUniKey(ukname string, cnt int) {
 /*GetUniKey 获取生成的唯一的编号，编号格式如下：
 类型（位数具体确定）+年（2位）月（1位）日（1位）时（1位）分（1位）秒（1位）+随机位（位数具体由生成NewUniKey确定）
 key的总长度:len(idtype)+7+len(max)
+1位：[0,61]
+2位：[0,61+61*62]=[0,3843]
+3位：[0,61+61*62+61*62*62]=[0,238327]
+4位：[0,61+61*62+61*62*62+61*62*62*62]=[0,14776335]
+5位：[0,61+61*62+61*62*62+61*62*62*62+61*62*62*62*62]=[0,916132831]
+...
 */
 func (cuk *CUniKey) GetUniKey(ukname, idtype string) (id string, err error) {
 	rnx, ok := <-cuk.uks[ukname]

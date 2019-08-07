@@ -11,7 +11,7 @@
 // fonts/chromohv.ttf
 // DO NOT EDIT!
 
-package xcm
+package xauth
 
 import (
 	"bytes"

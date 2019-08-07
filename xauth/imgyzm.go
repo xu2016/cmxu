@@ -1,7 +1,8 @@
-package xcm
+package xauth
 
 import (
 	"bytes"
+	"cmxu/xcm"
 	"encoding/base64"
 	"fmt"
 	"image"
@@ -96,9 +97,10 @@ func GetBase64ImgYzm(len, width, height int) (yzm, base64ImgStr string) {
 	}
 
 	//create a characters captcha.
-	yzm, capC := GenerateCaptcha(6, NSUSTR, configC)
+	yzm, capC := GenerateCaptcha(6, xcm.NSUSTR, configC)
 	//以base64编码
 	base64ImgStr = CaptchaWriteToBase64Encoding(capC)
+	GYzm.SetYzm(yzm, "")
 	return
 }
 
@@ -126,7 +128,7 @@ type CaptchaItem struct {
 // 	//write to base64 string.
 // 	base64stringC := base64Captcha.CaptchaWriteToBase64Encoding(capC)
 func GenerateCaptcha(len, stp int, config ConfigCharacter) (id string, captchaInstance CaptchaInterface) {
-	id = GetRandomString(int64(len), stp)
+	id = xcm.GetRandomString(int64(len), stp)
 	captchaInstance = EngineCharCreate(id, config)
 	return
 }
@@ -358,7 +360,7 @@ func (captcha *CaptchaImageChar) drawTextNoise(complex int, isSimpleFont bool) e
 		rw := rand.Intn(captcha.ImageWidth)
 		rh := rand.Intn(captcha.ImageHeight)
 
-		text := GetRandomString(1, KEYSTR)
+		text := xcm.GetRandomString(1, xcm.KEYSTR)
 		fontSize := rawFontSize/2 + float64(rand.Intn(5))
 
 		c.SetSrc(image.NewUniform(randLightColor()))
@@ -508,16 +510,16 @@ func randDeepColor() color.RGBA {
 
 //randLightColor get random ligth color. 随机生成浅色.
 func randLightColor() color.RGBA {
-	red, _ := GetRandomInt(0, 56)
-	green, _ := GetRandomInt(0, 56)
-	blue, _ := GetRandomInt(0, 56)
+	red, _ := xcm.GetRandomInt(0, 56)
+	green, _ := xcm.GetRandomInt(0, 56)
+	blue, _ := xcm.GetRandomInt(0, 56)
 	return color.RGBA{R: uint8(red + 200), G: uint8(green + 200), B: uint8(blue + 200), A: uint8(255)}
 }
 
 //randColor get random color. 生成随机颜色.
 func randColor() color.RGBA {
-	red, _ := GetRandomInt(0, 256)
-	green, _ := GetRandomInt(0, 256)
+	red, _ := xcm.GetRandomInt(0, 256)
+	green, _ := xcm.GetRandomInt(0, 256)
 	var blue int
 	if (red + green) > 400 {
 		blue = 0

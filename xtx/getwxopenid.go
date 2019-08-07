@@ -1,4 +1,4 @@
-package xwb
+package xtx
 
 import (
 	"encoding/json"
